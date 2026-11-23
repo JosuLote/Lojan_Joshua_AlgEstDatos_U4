@@ -1,7 +1,6 @@
 import time
 import random
 
-
 def insertion_sort(lista):
     #Ordenamiento por inserción. Tiempo promedio y peor: O(n^2). Espacio: O(1)
     for i in range(1, len(lista)):
@@ -17,7 +16,18 @@ def insertion_sort(lista):
     return lista
 
 
+def merge_sort(lista):
+    #Merge Sort. Tiempo: O(n log n). Espacio adicional: O(n)
+    if len(lista) <= 1:
+        return lista
+
+    medio = len(lista) // 2
+    izquierda = merge_sort(lista[:medio])
+    derecha = merge_sort(lista[medio:])
+
     return fusionar(izquierda, derecha)
+
+#f apoyo unir unitarios
 def fusionar(a, b):
     resultado = []
     i = 0
@@ -34,27 +44,44 @@ def fusionar(a, b):
     return resultado + a[i:] + b[j:]
 
 
+def busqueda_lineal(lista, objetivo):
+    """Busqueda lineal. Tiempo: O(n). Espacio adicional: O(1)."""
+    for i in range(len(lista)):
+        if lista[i] == objetivo:
+            return i
+    return -1
 
-def merge_sort(lista):
-    #Merge Sort. Tiempo: O(n log n). Espacio adicional: O(n)
-    if len(lista) <= 1:
-        return lista
 
-    medio = len(lista) // 2
-    izquierda = merge_sort(lista[:medio])
-    derecha = merge_sort(lista[medio:])
-    return fusionar(izquierda, derecha) 
+def busqueda_binaria(lista, objetivo):
+    """Busqueda binaria (lista ordenada). Tiempo: O(log n). Espacio: O(1)."""
+    izquierda = 0
+    derecha = len(lista) - 1
 
-A = random.sample(range(1, 10**6), 1000)
-#1
-lista_copy = A.copy()
-inicio = time.time()
-insertion_sort(lista_copy)
-fin = time.time()
-print(f"Insertion sort tardó {fin - inicio:.6f} segundos")
-#2
-lista_copy = A.copy()
-inicio = time.time()
-merge_sort(lista_copy)
-fin = time.time()
-print(f"Merge sort tardó {fin - inicio:.6f} segundos")
+    while izquierda <= derecha:
+        medio = (izquierda + derecha) // 2
+        valor_medio = lista[medio]
+
+        if valor_medio == objetivo:
+            return medio
+        elif valor_medio < objetivo:
+            izquierda = medio + 1
+        else:
+            derecha = medio - 1
+
+    return -1
+
+
+for nombre, n in [("Pequeña", 20), ("Grande", 1_000_000)]:
+    lista = list(range(n))
+    objetivo = -1  # peor caso
+
+    t0 = time.perf_counter()
+    busqueda_lineal(lista, objetivo)
+    t_lin = time.perf_counter() - t0
+
+    t0 = time.perf_counter()
+    busqueda_binaria(lista, objetivo)
+    t_bin = time.perf_counter() - t0
+
+    print(f"{nombre} ({n}): lineal={t_lin:.8f}s | binaria={t_bin:.8f}s")
+    
